@@ -4,17 +4,21 @@ import cv2
 import json
 
 
+def update_vars(var, value):
+    with open(r'variables.json', 'r') as file:
+        d = file.read()
+    d = json.loads(d)
+    d[var] = value
+
+    with open(r'variables.json', 'w') as file:
+        file.write(json.dumps(d))
+
+
 def prepare_photos(foto_path, save_path):
     model = get_model("resnet50_2020-07-20", max_size=2048)
     model.eval()
 
-    with open(r'variables.json', 'r') as file:
-        d = file.read()
-    d = json.loads(d)
-    d['train_photo_path'] = save_path
-
-    with open(r'variables.json', 'w') as file:
-        file.write(json.dumps(d))
+    update_vars('train_photo_path', save_path)
 
     counter = 1
     save_path = str(Path(save_path).joinpath('{}.jpg'))
