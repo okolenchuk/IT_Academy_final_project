@@ -36,10 +36,10 @@ def generate_prompt_images(prompt: str, pipe, num_samples: int = 2,           #c
         c += 1
 
 
-def generate_n_images(category, class_name: str, num: int = 10):
-    list_prompts = class_prompts(category)
+def generate_n_images(class_name, instance_name: str, num: int = 10):
+    list_prompts = class_prompts(class_name)
     for i in range(num):
-        prompt = random.choice[list_prompts].replace('*', class_name)
+        prompt = random.choice[list_prompts].replace('*', instance_name)
         generate_prompt_images(prompt, num_samples=1)
 
 

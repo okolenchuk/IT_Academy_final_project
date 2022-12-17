@@ -29,9 +29,10 @@ def prepare_photos(foto_path, save_path):
         img = cv2.imread(str(fle))
         faces = model.predict_jsons(img)
         for bb in faces:
-            x1, y1, x2, y2 = [int(i) for i in bb['bbox']]
-            side = int(max(x2 - x1, y2 - y1) * 1.2) // 2
-            x_c, y_c = [max((x1 + x2) // 2, side), max((y1 + y2) // 2, side)]
-            new_image = cv2.resize(img[y_c - side:y_c + side, x_c - side:x_c + side], (512, 512))
-            cv2.imwrite(save_path.format(counter), new_image)
-            counter += 1
+            if len(bb['bbox']):
+                x1, y1, x2, y2 = [int(i) for i in bb['bbox']]
+                side = int(max(x2 - x1, y2 - y1) * 1.2) // 2
+                x_c, y_c = [max((x1 + x2) // 2, side), max((y1 + y2) // 2, side)]
+                new_image = cv2.resize(img[y_c - side:y_c + side, x_c - side:x_c + side], (512, 512))
+                cv2.imwrite(save_path.format(counter), new_image)
+                counter += 1
