@@ -3,11 +3,12 @@ import torch
 from torch import autocast
 import random
 from prompt_selection import *
+from pathlib import Path
 
 
 def generate_prompt_images(prompt: str, pipe, num_samples: int = 2,           #change pipe
                            guidance_scale=7.5, num_inference_steps=100,
-                           save_path=r'/result/{}.png'):                     #save_path
+                           save_path=r'/result/'):
     height = 512
     width = 512
     g_cuda = torch.Generator(device='cuda')
@@ -24,6 +25,12 @@ def generate_prompt_images(prompt: str, pipe, num_samples: int = 2,           #c
     print(prompt)
     name = re.sub(r'[^\w]', ' ', prompt)
     c = 0
+
+    if not Path(save_path).exists():
+        Path(save_path).mkdir()
+
+    save_path = str(Path(save_path).joinpath('{}.png'))
+
     for img in images:
         img.save(save_path.format(name[:50] + '_' + str(c + 1)))
         c += 1
