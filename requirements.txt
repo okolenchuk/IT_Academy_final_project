@@ -3,3 +3,9 @@ torch
 random_word
 requests
 regex
+
+retinaface-pytorch
+opencv-python
+
+
+
