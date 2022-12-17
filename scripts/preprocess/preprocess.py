@@ -21,9 +21,9 @@ def prepare_photos(foto_path, save_path):
     update_vars('train_photo_path', save_path)
 
     counter = 1
-    save_path = str(Path(save_path).joinpath('{}.jpg'))
 
     photos = Path(foto_path).glob('*.[jpg][jpeg][png]')
+    save_path = str(Path(save_path).joinpath('{}.jpg'))
 
     for fle in photos:
         img = cv2.imread(str(fle))
