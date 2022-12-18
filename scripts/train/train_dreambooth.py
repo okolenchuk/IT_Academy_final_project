@@ -25,6 +25,7 @@ from torchvision import transforms
 from tqdm.auto import tqdm
 from transformers import CLIPTextModel, CLIPTokenizer
 
+from scripts.preprocess.preprocess import update_vars
 
 torch.backends.cudnn.benchmark = True
 
@@ -395,6 +396,8 @@ def get_full_repo_name(model_id: str, organization: Optional[str] = None, token:
         token = HfFolder.get_token()
     if organization is None:
         username = whoami(token)["name"]
+        update_vars('huggingface_Token', token)
+        update_vars('model_name', model_id)
         return f"{username}/{model_id}"
     else:
         return f"{organization}/{model_id}"
