@@ -35,6 +35,7 @@ class DreamBoothDataset(Dataset):
         self.class_images_path = []
 
         dataset_dir = str(Path(self.instance_data_dir).joinpath('prepared_dataset'))
+        update_vars('train_photo_path', dataset_dir)
         prepare_photos(self.instance_data_dir, dataset_dir)
 
         inst_img_path = [(x, self.instance_prompt) for x in Path(dataset_dir).iterdir()

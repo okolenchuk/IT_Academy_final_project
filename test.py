@@ -256,6 +256,8 @@ def parse_args(input_args=None):
 def main(args):
     logging_dir = Path(args.output_dir, "0", 'logs')
 
+    update_vars('trained_model_dir', args.output_dir)
+
     accelerator = Accelerator(
         gradient_accumulation_steps=1,
         mixed_precision=None,
@@ -337,6 +339,8 @@ def main(args):
     #         revision=args['revision'],
     #     )
     # elif args['pretrained_model_name_or_path']:
+
+    update_vars('model_name', args.pretrained_model_name_or_path)
     tokenizer = CLIPTokenizer.from_pretrained(
         args.pretrained_model_name_or_path,
         subfolder="tokenizer",
@@ -376,6 +380,7 @@ def main(args):
 
     noise_scheduler = DDPMScheduler.from_config(args.pretrained_model_name_or_path, subfolder="scheduler")
 
+    update_vars('instance_prompt', args.instance_prompt)
     train_dataset = DreamBoothDataset(
         instance_data_dir=args.instance_data_dir,
         instance_prompt=args.instance_prompt,
@@ -392,8 +397,8 @@ def main(args):
 
         # Concat class and instance examples for prior preservation.
         # We do this to avoid doing two forward passes.
-        input_ids += [example["class_prompt_ids"] for example in examples]
-        pixel_values += [example["class_images"] for example in examples]
+        # input_ids += [example["class_prompt_ids"] for example in examples]
+        # pixel_values += [example["class_images"] for example in examples]
 
         pixel_values = torch.stack(pixel_values)
         pixel_values = pixel_values.to(memory_format=torch.contiguous_format).float()
