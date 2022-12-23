@@ -286,49 +286,49 @@ def main(args):
     #         args['concepts_list'] = json.load(f)
 
     # if args['with_prior_preservation']:
-    pipeline = None
-    #     for concept in args['concepts_list']:
-    class_images_dir = Path(args.class_data_dir)
-    class_images_dir.mkdir(parents=True, exist_ok=True)
-    cur_class_images = len(list(class_images_dir.iterdir()))
-
-    if cur_class_images < args.num_class_images:
-        torch_dtype = torch.float16
-        if pipeline is None:
-            pipeline = StableDiffusionPipeline.from_pretrained(
-                args.pretrained_model_name_or_path,
-                vae=AutoencoderKL.from_pretrained("stabilityai/sd-vae-ft-mse",
-                                                  subfolder=None,
-                                                  revision=None,
-                                                  torch_dtype=torch_dtype),
-                torch_dtype=torch_dtype,
-                safety_checker=None,
-                revision='fp16')
-            pipeline.set_progress_bar_config(disable=True)
-            pipeline.to(accelerator.device)
-
-        num_new_images = args.num_class_images - cur_class_images
-        # logger.info(f"Number of class images to sample: {num_new_images}.")
-
-        sample_dataset = PromptDataset(args.class_prompt, num_new_images)
-        sample_dataloader = torch.utils.data.DataLoader(sample_dataset, batch_size=4)
-
-        sample_dataloader = accelerator.prepare(sample_dataloader)
-
-        with torch.autocast("cuda"), torch.inference_mode():
-            for example in tqdm(
-                    sample_dataloader, desc="Generating class images", disable=not accelerator.is_local_main_process
-            ):
-                images = pipeline(example["prompt"]).images
-
-                for i, image in enumerate(images):
-                    hash_image = hashlib.sha1(image.tobytes()).hexdigest()
-                    image_filename = class_images_dir / f"{example['index'][i] + cur_class_images}-{hash_image}.jpg"
-                    image.save(image_filename)
-
-        del pipeline
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
+    # pipeline = None
+    # #     for concept in args['concepts_list']:
+    # class_images_dir = Path(args.class_data_dir)
+    # class_images_dir.mkdir(parents=True, exist_ok=True)
+    # cur_class_images = len(list(class_images_dir.iterdir()))
+    #
+    # if cur_class_images < args.num_class_images:
+    #     torch_dtype = torch.float16
+    #     if pipeline is None:
+    #         pipeline = StableDiffusionPipeline.from_pretrained(
+    #             args.pretrained_model_name_or_path,
+    #             vae=AutoencoderKL.from_pretrained("stabilityai/sd-vae-ft-mse",
+    #                                               subfolder=None,
+    #                                               revision=None,
+    #                                               torch_dtype=torch_dtype),
+    #             torch_dtype=torch_dtype,
+    #             safety_checker=None,
+    #             revision='fp16')
+    #         pipeline.set_progress_bar_config(disable=True)
+    #         pipeline.to(accelerator.device)
+    #
+    #     num_new_images = args.num_class_images - cur_class_images
+    #     # logger.info(f"Number of class images to sample: {num_new_images}.")
+    #
+    #     sample_dataset = PromptDataset(args.class_prompt, num_new_images)
+    #     sample_dataloader = torch.utils.data.DataLoader(sample_dataset, batch_size=4)
+    #
+    #     sample_dataloader = accelerator.prepare(sample_dataloader)
+    #
+    #     with torch.autocast("cuda"), torch.inference_mode():
+    #         for example in tqdm(
+    #                 sample_dataloader, desc="Generating class images", disable=not accelerator.is_local_main_process
+    #         ):
+    #             images = pipeline(example["prompt"]).images
+    #
+    #             for i, image in enumerate(images):
+    #                 hash_image = hashlib.sha1(image.tobytes()).hexdigest()
+    #                 image_filename = class_images_dir / f"{example['index'][i] + cur_class_images}-{hash_image}.jpg"
+    #                 image.save(image_filename)
+    #
+    #     del pipeline
+    #     if torch.cuda.is_available():
+    #         torch.cuda.empty_cache()
 
     # Load the tokenizer
     # if args['tokenizer_name']:

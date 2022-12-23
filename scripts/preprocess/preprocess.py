@@ -10,7 +10,7 @@ def update_vars(var, value):
     d = json.loads(d)
     d[var] = value
 
-    with open(r'variables.json', 'w') as file:
+    with open(r'IT_Academy_final_project\variables.json', 'w') as file:
         file.write(json.dumps(d))
 
 
