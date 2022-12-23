@@ -1,31 +1,24 @@
 import argparse
 import hashlib
 import itertools
-import random
-import json
 import math
 import os
 from contextlib import nullcontext
-from pathlib import Path
 from typing import Optional
 
 import torch
 import torch.nn.functional as F
 import torch.utils.checkpoint
-from torch.utils.data import Dataset
-
 from accelerate import Accelerator
 from accelerate.logging import get_logger
 from accelerate.utils import set_seed
 from diffusers import AutoencoderKL, DDIMScheduler, DDPMScheduler, StableDiffusionPipeline, UNet2DConditionModel
 from diffusers.optimization import get_scheduler
-from huggingface_hub import HfFolder, Repository, whoami
-from PIL import Image
-from torchvision import transforms
+from huggingface_hub import HfFolder, whoami
+from torch.utils.data import Dataset
 from tqdm.auto import tqdm
 from transformers import CLIPTextModel, CLIPTokenizer
 
-from scripts.preprocess.preprocess import update_vars
 from scripts.train.datasets import *
 
 torch.backends.cudnn.benchmark = True
