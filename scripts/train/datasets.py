@@ -32,7 +32,7 @@ class DreamBoothDataset(Dataset):
         self.instance_images_path = []
         self.class_images_path = []
 
-        dataset_dir = str(Path(instance_data_dir).joinpath('dataset'))
+        dataset_dir = str(Path(instance_data_dir).joinpath('prepared_dataset'))
         prepare_photos(instance_data_dir, dataset_dir)
 
         inst_img_path = [(x, instance_prompt) for x in Path(dataset_dir).iterdir()
