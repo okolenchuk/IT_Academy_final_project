@@ -17,7 +17,9 @@ class DreamBoothDataset(Dataset):
 
     def __init__(
         self,
-        concepts_list,
+        instance_data_dir,
+        instance_prompt,
+        class_prompt,
         tokenizer,
         with_prior_preservation=True,
         size=512,
@@ -30,15 +32,15 @@ class DreamBoothDataset(Dataset):
         self.instance_images_path = []
         self.class_images_path = []
 
-        dataset_dir = str(Path(concepts_list["instance_data_dir"]).joinpath('dataset'))
-        prepare_photos(concepts_list["instance_data_dir"], dataset_dir)
+        dataset_dir = str(Path(instance_data_dir).joinpath('dataset'))
+        prepare_photos(instance_data_dir, dataset_dir)
 
-        inst_img_path = [(x, concepts_list["instance_prompt"]) for x in Path(dataset_dir).iterdir()
+        inst_img_path = [(x, instance_prompt) for x in Path(dataset_dir).iterdir()
                          if x.is_file()]
         self.instance_images_path.extend(inst_img_path)
 
         if with_prior_preservation:
-            class_img_path = [(x, concepts_list["class_prompt"]) for x in Path(dataset_dir).iterdir()
+            class_img_path = [(x, class_prompt) for x in Path(dataset_dir).iterdir()
                               if x.is_file()]
             self.class_images_path.extend(class_img_path[:num_class_images])
 
