@@ -5,12 +5,12 @@ import json
 
 
 def update_vars(var, value):
-    with open(r'variables.json', 'r') as file:
+    with open(str(Path('IT_Academy_final_project').join('variables.json')), 'r') as file:
         d = file.read()
     d = json.loads(d)
     d[var] = value
 
-    with open(r'IT_Academy_final_project\variables.json', 'w') as file:
+    with open(str(Path('IT_Academy_final_project').join('variables.json')), 'w') as file:
         file.write(json.dumps(d))
 
 

@@ -381,7 +381,7 @@ def main(args):
         instance_prompt=args.instance_prompt,
         class_prompt=args.class_prompt,
         tokenizer=tokenizer,
-        with_prior_preservation=True,
+        # with_prior_preservation=True,
         size=512,
         num_class_images=args.num_class_images
     )
@@ -392,9 +392,8 @@ def main(args):
 
         # Concat class and instance examples for prior preservation.
         # We do this to avoid doing two forward passes.
-        if args['with_prior_preservation']:
-            input_ids += [example["class_prompt_ids"] for example in examples]
-            pixel_values += [example["class_images"] for example in examples]
+        input_ids += [example["class_prompt_ids"] for example in examples]
+        pixel_values += [example["class_images"] for example in examples]
 
         pixel_values = torch.stack(pixel_values)
         pixel_values = pixel_values.to(memory_format=torch.contiguous_format).float()
@@ -567,21 +566,19 @@ def main(args):
                 # Predict the noise residual
                 noise_pred = unet(noisy_latents, timesteps, encoder_hidden_states).sample
 
-                if args.with_prior_preservation:
-                    # Chunk the noise and noise_pred into two parts and compute the loss on each part separately.
-                    noise_pred, noise_pred_prior = torch.chunk(noise_pred, 2, dim=0)
-                    noise, noise_prior = torch.chunk(noise, 2, dim=0)
+                # Chunk the noise and noise_pred into two parts and compute the loss on each part separately.
+                noise_pred, noise_pred_prior = torch.chunk(noise_pred, 2, dim=0)
+                noise, noise_prior = torch.chunk(noise, 2, dim=0)
 
-                    # Compute instance loss
-                    loss = F.mse_loss(noise_pred.float(), noise.float(), reduction="none").mean([1, 2, 3]).mean()
+                # Compute instance loss
+                loss = F.mse_loss(noise_pred.float(), noise.float(), reduction="none").mean([1, 2, 3]).mean()
 
-                    # Compute prior loss
-                    prior_loss = F.mse_loss(noise_pred_prior.float(), noise_prior.float(), reduction="mean")
+                # Compute prior loss
+                prior_loss = F.mse_loss(noise_pred_prior.float(), noise_prior.float(), reduction="mean")
 
-                    # Add the prior loss to the instance loss.
-                    loss = loss + args.prior_loss_weight * prior_loss
-                else:
-                    loss = F.mse_loss(noise_pred.float(), noise.float(), reduction="mean")
+                # Add the prior loss to the instance loss.
+                loss = loss + args.prior_loss_weight * prior_loss
+
 
                 accelerator.backward(loss)
                 # if accelerator.sync_gradients:
