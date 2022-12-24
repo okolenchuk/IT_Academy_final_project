@@ -80,17 +80,17 @@ class DreamBoothDataset(Dataset):
         ).input_ids
 
         # if self.with_prior_preservation:
-        #     class_path, class_prompt = self.class_images_path[index % self.num_class_images]
-        #     class_image = Image.open(class_path)
-        #     if not class_image.mode == "RGB":
-        #         class_image = class_image.convert("RGB")
-        #     example["class_images"] = self.image_transforms(class_image)
-        #     example["class_prompt_ids"] = self.tokenizer(
-        #         class_prompt,
-        #         padding="do_not_pad",
-        #         truncation=True,
-        #         max_length=self.tokenizer.model_max_length,
-        #     ).input_ids
+        class_path, class_prompt = self.class_images_path[index % self.num_class_images]
+        class_image = Image.open(class_path)
+        if not class_image.mode == "RGB":
+            class_image = class_image.convert("RGB")
+        example["class_images"] = self.image_transforms(class_image)
+        example["class_prompt_ids"] = self.tokenizer(
+            class_prompt,
+            padding="do_not_pad",
+            truncation=True,
+            max_length=self.tokenizer.model_max_length,
+        ).input_ids
 
         return example
 
