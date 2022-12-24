@@ -80,7 +80,7 @@ class DreamBoothDataset(Dataset):
         ).input_ids
 
         # if self.with_prior_preservation:
-        class_path, class_prompt = self.class_images_path[index % self.num_class_images]
+        class_path, class_prompt = self.class_images_path[index % 50]
         class_image = Image.open(class_path)
         if not class_image.mode == "RGB":
             class_image = class_image.convert("RGB")
