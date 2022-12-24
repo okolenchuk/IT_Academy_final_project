@@ -231,7 +231,7 @@ def parse_args(input_args=None):
             " flag passed with the `accelerate.launch` command. Use this argument to override the accelerate config."
         ),
     )
-    parser.add_argument("--not_cache_latents", action="store_true", help="Do not precompute and cache latents from VAE.")
+    # parser.add_argument("--not_cache_latents", action="store_true", help="Do not precompute and cache latents from VAE.")
     # parser.add_argument("--hflip", action="store_true", help="Apply horizontal flip data augmentation.")
     parser.add_argument("--local_rank", type=int, default=-1, help="For distributed training: local_rank")
     # parser.add_argument(
@@ -543,12 +543,12 @@ def main(args):
         for step, batch in enumerate(train_dataloader):
             with accelerator.accumulate(unet):
                 # Convert images to latent space
-                with torch.no_grad():
-                    if not args.not_cache_latents:
-                        latent_dist = batch[0][0]
-                    else:
-                        latent_dist = vae.encode(batch["pixel_values"].to(dtype=weight_dtype)).latent_dist
-                    latents = latent_dist.sample() * 0.18215
+                # with torch.no_grad():
+                #     if not args.not_cache_latents:
+                #         latent_dist = batch[0][0]
+                #     else:
+                #         latent_dist = vae.encode(batch["pixel_values"].to(dtype=weight_dtype)).latent_dist
+                #     latents = latent_dist.sample() * 0.18215
 
                 # Sample noise that we'll add to the latents
                 noise = torch.randn_like(latents)
@@ -562,11 +562,11 @@ def main(args):
                 noisy_latents = noise_scheduler.add_noise(latents, noise, timesteps)
 
                 # Get the text embedding for conditioning
-                with text_enc_context:
-                    if not args.not_cache_latents:
-                        encoder_hidden_states = text_encoder(batch[0][1])[0]
-                    else:
-                        encoder_hidden_states = text_encoder(batch["input_ids"])[0]
+                # with text_enc_context:
+                #     if not args.not_cache_latents:
+                #         encoder_hidden_states = text_encoder(batch[0][1])[0]
+                #     else:
+                #         encoder_hidden_states = text_encoder(batch["input_ids"])[0]
 
                 # Predict the noise residual
                 noise_pred = unet(noisy_latents, timesteps, encoder_hidden_states).sample
