@@ -143,15 +143,12 @@ def parse_args(input_args=None):
 
 
 def main(args):
-    logging_dir = Path(args.output_dir, "0", 'logs')
-
     update_vars('trained_model_dir', args.output_dir)
 
     accelerator = Accelerator(
         gradient_accumulation_steps=1,
         mixed_precision="fp16",
         log_with="tensorboard",
-        logging_dir=logging_dir,
     )
 
 
@@ -176,7 +173,6 @@ def main(args):
             pipeline.to(accelerator.device)
 
         num_new_images = args.num_class_images - cur_class_images
-        # logger.info(f"Number of class images to sample: {num_new_images}.")
 
         sample_dataset = PromptDataset(args.class_prompt, num_new_images)
         sample_dataloader = torch.utils.data.DataLoader(sample_dataset, batch_size=1)
@@ -221,7 +217,7 @@ def main(args):
         args.pretrained_model_name_or_path,
         subfolder="unet",
         revision="fp16",
-        torch_dtype=torch.float16
+        torch_dtype=torch.float32
     )
     unet.enable_gradient_checkpointing()
 
@@ -345,19 +341,10 @@ def main(args):
         accelerator.init_trackers("dreambooth")
 
     # Train!
-    # total_batch_size = accelerator.num_processes
 
-    # logger.info("***** Running training *****")
-    # logger.info(f"  Num examples = {len(train_dataset)}")
-    # logger.info(f"  Num batches each epoch = {len(train_dataloader)}")
-    # logger.info(f"  Num Epochs = {args['num_train_epochs']}")
-    # logger.info(f"  Instantaneous batch size per device = {args['train_batch_size']}")
-    # logger.info(f"  Total train batch size (w. parallel, distributed & accumulation) = {total_batch_size}")
-    # logger.info(f"  Gradient Accumulation steps = {args['gradient_accumulation_steps']}")
-    # logger.info(f"  Total optimization steps = {args['max_train_steps']}")
-
+    loss_logs = []
     def save_weights(step):
-        # Create the pipeline using using the trained modules and save it.
+        # Create the pipeline using the trained modules and save it.
         if accelerator.is_main_process:
             text_enc_model = accelerator.unwrap_model(text_encoder)
             scheduler = DDIMScheduler(beta_start=0.00085, beta_end=0.012, beta_schedule="scaled_linear",
@@ -473,6 +460,9 @@ def main(args):
             progress_bar.set_postfix(**logs)
             accelerator.log(logs, step=global_step)
 
+            loss_logs.append({'Loss on {}'.format(global_step): loss})
+            loss_logs.append({'Average loss on {}'.format(global_step): loss_avg.avg.item()})
+
             if global_step > 0 and not global_step % 1000:
                 save_weights(global_step)
 
@@ -488,6 +478,7 @@ def main(args):
 
     accelerator.end_training()
 
+    update_vars('logs', '\n'.join(loss_logs))
 
 if __name__ == "__main__":
     args = parse_args()
