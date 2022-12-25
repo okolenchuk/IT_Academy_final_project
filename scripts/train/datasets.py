@@ -67,7 +67,7 @@ class DreamBoothDataset(Dataset):
 
     def __getitem__(self, index):
         example = {}
-        instance_path, instance_prompt = self.instance_images_path[index % self.num_instance_images]
+        instance_path, instance_prompt = self.instance_images_path[index] #% self.num_instance_images]
         instance_image = Image.open(instance_path)
         if not instance_image.mode == "RGB":
             instance_image = instance_image.convert("RGB")
@@ -80,7 +80,7 @@ class DreamBoothDataset(Dataset):
         ).input_ids
 
         # if self.with_prior_preservation:
-        class_path, class_prompt = self.class_images_path[index % 50]
+        class_path, class_prompt = self.class_images_path[index] # % self.num_class_images]
         class_image = Image.open(class_path)
         if not class_image.mode == "RGB":
             class_image = class_image.convert("RGB")
