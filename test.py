@@ -83,6 +83,9 @@ def parse_args(input_args=None):
         default=100,
         help="The number of inference steps for save sample.",
     )
+    parser.add_argument(
+        "--use_8bit_adam", action="store_true", help="Whether or not to use 8-bit Adam from bitsandbytes."
+    )
     parser.add_argument("--prior_loss_weight", type=float, default=1.0, help="The weight of prior preservation loss.")
     parser.add_argument(
         "--num_class_images",
@@ -224,7 +227,18 @@ def main(args):
     vae.requires_grad_(False)
     text_encoder.requires_grad_(False)
 
-    optimizer_class = torch.optim.AdamW
+    # Use 8-bit Adam for lower memory usage or to fine-tune the model in 16GB GPUs
+    if args.use_8bit_adam:
+        try:
+            import bitsandbytes as bnb
+        except ImportError:
+            raise ImportError(
+                "To use 8-bit Adam, please install the bitsandbytes library: `pip install bitsandbytes`."
+            )
+
+        optimizer_class = bnb.optim.AdamW8bit
+    else:
+        optimizer_class = torch.optim.AdamW
 
     params_to_optimize = (itertools.chain(unet.parameters(), text_encoder.parameters()))
     optimizer = optimizer_class(

@@ -9,8 +9,8 @@ opencv-python
 
 Pillow
 torchvision
+bitsandbytes
 
-git+https://github.com/ShivamShrirao/diffusers
 accelerate
 tqdm
 transformers

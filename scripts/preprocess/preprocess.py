@@ -29,7 +29,7 @@ def prepare_photos(foto_path, save_path):
         Path(save_path).mkdir()
     save_path = str(Path(save_path).joinpath('{}.jpg'))
 
-    for file in tqdm(photos, desc='Preparing your photos', disable=True):
+    for file in tqdm(photos, desc='Preparing your photos'):
         img = cv2.imread(str(file))
         faces = model.predict_jsons(img)
         for bb in faces:
