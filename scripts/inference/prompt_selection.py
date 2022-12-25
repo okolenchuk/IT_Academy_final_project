@@ -4,9 +4,7 @@ import json
 import random
 
 prompts_cat = {'women': r'prompts/female.txt',
-               'girl': r'prompts/female.txt',
-               'man': r'prompts/male.txt',
-               'boy': r'prompts/male.txt'}
+               'man': r'prompts/male.txt'}
 
 
 def random_prompt(word='') -> str:

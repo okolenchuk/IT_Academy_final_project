@@ -9,6 +9,7 @@ from pathlib import Path
 import torch
 import torch.nn.functional as F
 import torch.utils.checkpoint
+from matplotlib import pyplot as plt
 from torch.utils.data import Dataset
 
 from accelerate import Accelerator
@@ -216,6 +217,7 @@ def main(args):
     # Train!
 
     loss_logs = []
+
     def save_weights(step):
         # Create the pipeline using the trained modules and save it.
         if accelerator.is_main_process:
@@ -239,13 +241,13 @@ def main(args):
             save_dir = os.path.join(args.output_dir, f"{step}")
             pipeline.save_pretrained(save_dir)
 
-
             if args.save_sample_prompt is not None:
                 pipeline = pipeline.to(accelerator.device)
                 g_cuda = torch.Generator(device=accelerator.device)
                 pipeline.set_progress_bar_config(disable=True)
                 sample_dir = os.path.join(save_dir, "samples")
                 os.makedirs(sample_dir, exist_ok=True)
+                saved_images = []
                 with torch.autocast("cuda"), torch.inference_mode():
                     for i in tqdm(range(args.n_save_sample), desc="Generating samples"):
                         images = pipeline(
@@ -260,6 +262,9 @@ def main(args):
                 if torch.cuda.is_available():
                     torch.cuda.empty_cache()
             print(f"[*] Weights saved at {save_dir}")
+
+            plt.tight_layout()
+            plt.savefig('grid.png', dpi=72)
 
     # Only show the progress bar once on each machine.
     progress_bar = tqdm(range(args.max_train_steps), disable=not accelerator.is_local_main_process)
@@ -328,8 +333,6 @@ def main(args):
 
             loss_logs.append(['Loss on {}'.format(global_step), loss])
             loss_logs.append(['Average loss on {}'.format(global_step), loss_avg.avg.item()])
-
-            save_weights(global_step)
 
             progress_bar.update(1)
             global_step += 1
