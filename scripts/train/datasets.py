@@ -43,9 +43,9 @@ class DreamBoothDataset(Dataset):
         self.instance_images_path.extend(inst_img_path)
 
         # if with_prior_preservation:
-        #     class_img_path = [(x, self.class_prompt) for x in Path(dataset_dir).iterdir()
-        #                       if x.is_file()]
-        #     self.class_images_path.extend(class_img_path[:num_class_images])
+        class_img_path = [(x, self.class_prompt) for x in Path(dataset_dir).iterdir()
+                          if x.is_file()]
+        self.class_images_path.extend(class_img_path[:num_class_images])
 
         random.shuffle(self.instance_images_path)
         self.num_instance_images = len(self.instance_images_path)

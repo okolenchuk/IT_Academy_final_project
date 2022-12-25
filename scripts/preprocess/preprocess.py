@@ -2,6 +2,7 @@ from retinaface.pre_trained_models import get_model
 from pathlib import Path
 import cv2
 import json
+from tqdm.auto import tqdm
 
 
 def update_vars(var, value):
@@ -28,8 +29,8 @@ def prepare_photos(foto_path, save_path):
         Path(save_path).mkdir()
     save_path = str(Path(save_path).joinpath('{}.jpg'))
 
-    for fle in photos:
-        img = cv2.imread(str(fle))
+    for file in tqdm(photos, desc='Preparing your photos'):
+        img = cv2.imread(str(file))
         faces = model.predict_jsons(img)
         for bb in faces:
             if len(bb['bbox']):
