@@ -148,7 +148,6 @@ def main(args):
     accelerator = Accelerator(
         gradient_accumulation_steps=1,
         mixed_precision="fp16",
-        log_with="tensorboard",
     )
 
 
@@ -444,13 +443,6 @@ def main(args):
 
 
                 accelerator.backward(loss)
-                # if accelerator.sync_gradients:
-                #     params_to_clip = (
-                #         itertools.chain(unet.parameters(), text_encoder.parameters())
-                #         if args.train_text_encoder
-                #         else unet.parameters()
-                #     )
-                #     accelerator.clip_grad_norm_(params_to_clip, args.max_grad_norm)
                 optimizer.step()
                 lr_scheduler.step()
                 optimizer.zero_grad(set_to_none=True)
@@ -463,8 +455,7 @@ def main(args):
             loss_logs.append({'Loss on {}'.format(global_step): loss})
             loss_logs.append({'Average loss on {}'.format(global_step): loss_avg.avg.item()})
 
-            if global_step > 0 and not global_step % 1000:
-                save_weights(global_step)
+            save_weights(global_step)
 
             progress_bar.update(1)
             global_step += 1
