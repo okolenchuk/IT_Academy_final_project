@@ -2,9 +2,10 @@ from random_word import RandomWords
 import requests
 import json
 import random
+from pathlib import Path
 
-prompts_cat = {'women': r'prompts/female.txt',
-               'man': r'prompts/male.txt'}
+prompts_cat = {'women': r'female.txt',
+               'man': r'male.txt'}
 
 
 def random_prompt(word='') -> str:
@@ -21,7 +22,7 @@ def random_prompt(word='') -> str:
 
 
 def class_prompts(category) -> list:
-    prompts_file = prompts_cat[category]
+    prompts_file = str(Path('IT_Academy_final_project/prompts').joinpath(prompts_cat[category]))
     with open(prompts_file, 'r') as file:
         list_prompts = file.readlines()
     return list_prompts

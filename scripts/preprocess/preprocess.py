@@ -6,12 +6,12 @@ from tqdm.auto import tqdm
 
 
 def update_vars(var, value):
-    with open('variables.json', 'r') as file:
+    with open(str(Path('IT_Academy_final_project').joinpath('variables.json')), 'r') as file:
         d = file.read()
     d = json.loads(d)
     d[var] = value
 
-    with open('variables.json', 'w') as file:
+    with open(str(Path('IT_Academy_final_project').joinpath('variables.json')), 'w') as file:
         file.write(json.dumps(d))
 
 
