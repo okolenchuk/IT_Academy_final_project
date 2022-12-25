@@ -146,7 +146,7 @@ def main(args):
 
     accelerator = Accelerator(
         gradient_accumulation_steps=1,
-        mixed_precision=None,
+        mixed_precision="fp16",
         log_with="tensorboard",
         logging_dir=logging_dir,
     )
@@ -253,8 +253,8 @@ def main(args):
 
         # Concat class and instance examples for prior preservation.
         # We do this to avoid doing two forward passes.
-        # input_ids += [example["class_prompt_ids"] for example in examples]
-        # pixel_values += [example["class_images"] for example in examples]
+        input_ids += [example["class_prompt_ids"] for example in examples]
+        pixel_values += [example["class_images"] for example in examples]
 
         pixel_values = torch.stack(pixel_values)
         pixel_values = pixel_values.to(memory_format=torch.contiguous_format).float()
@@ -330,7 +330,7 @@ def main(args):
         accelerator.init_trackers("dreambooth")
 
     # Train!
-    total_batch_size = accelerator.num_processes
+    # total_batch_size = accelerator.num_processes
 
     # logger.info("***** Running training *****")
     # logger.info(f"  Num examples = {len(train_dataset)}")
