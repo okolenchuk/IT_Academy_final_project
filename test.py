@@ -223,6 +223,7 @@ def main(args):
         revision="fp16",
         torch_dtype=torch.float16
     )
+    unet.enable_gradient_checkpointing()
 
     vae.requires_grad_(False)
     text_encoder.requires_grad_(False)
