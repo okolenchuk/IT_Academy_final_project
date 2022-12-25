@@ -17,129 +17,6 @@ from diffusers.optimization import get_scheduler
 from tqdm.auto import tqdm
 from transformers import CLIPTextModel, CLIPTokenizer
 from scripts.train.datasets import *
-import argparse
-
-
-def parse_args(input_args=None):
-    parser = argparse.ArgumentParser(description="Simple example of a training script.")
-    parser.add_argument(
-        "--pretrained_model_name_or_path",
-        type=str,
-        default=None,
-        required=True,
-        help="Path to pretrained model or model identifier from huggingface.co/models.",
-    )
-    parser.add_argument(
-        "--instance_data_dir",
-        type=str,
-        default=None,
-        help="A folder containing the training data of instance images.",
-    )
-    parser.add_argument(
-        "--class_data_dir",
-        type=str,
-        default=None,
-        help="A folder containing the training data of class images.",
-    )
-    parser.add_argument(
-        "--instance_prompt",
-        type=str,
-        default=None,
-        help="The prompt with identifier specifying the instance",
-    )
-    parser.add_argument(
-        "--class_prompt",
-        type=str,
-        default=None,
-        help="The prompt to specify images in the same class as provided instance images.",
-    )
-    parser.add_argument(
-        "--save_sample_prompt",
-        type=str,
-        default=None,
-        help="The prompt used to generate sample outputs to save.",
-    )
-    parser.add_argument(
-        "--save_sample_negative_prompt",
-        type=str,
-        default=None,
-        help="The negative prompt used to generate sample outputs to save.",
-    )
-    parser.add_argument(
-        "--n_save_sample",
-        type=int,
-        default=4,
-        help="The number of samples to save.",
-    )
-    parser.add_argument(
-        "--save_guidance_scale",
-        type=float,
-        default=7.5,
-        help="CFG for save sample.",
-    )
-    parser.add_argument(
-        "--save_infer_steps",
-        type=int,
-        default=100,
-        help="The number of inference steps for save sample.",
-    )
-    parser.add_argument(
-        "--use_8bit_adam", action="store_true", help="Whether or not to use 8-bit Adam from bitsandbytes."
-    )
-    parser.add_argument("--prior_loss_weight", type=float, default=1.0, help="The weight of prior preservation loss.")
-    parser.add_argument(
-        "--num_class_images",
-        type=int,
-        default=100,
-        help=(
-            "Minimal class images for prior preservation loss. If not have enough images, additional images will be"
-            " sampled with class_prompt."
-        ),
-    )
-    parser.add_argument(
-        "--output_dir",
-        type=str,
-        default="text-inversion-model",
-        help="The output directory where the model predictions and checkpoints will be written.",
-    )
-    parser.add_argument("--train_text_encoder", action="store_true", help="Whether to train the text encoder")
-    parser.add_argument(
-        "--train_batch_size", type=int, default=4, help="Batch size (per device) for the training dataloader."
-    )
-    parser.add_argument(
-        "--sample_batch_size", type=int, default=4, help="Batch size (per device) for sampling images."
-    )
-    parser.add_argument("--num_train_epochs", type=int, default=1)
-    parser.add_argument(
-        "--max_train_steps",
-        type=int,
-        default=None,
-        help="Total number of training steps to perform.  If provided, overrides num_train_epochs.",
-    )
-    # parser.add_argument(
-    #     "--gradient_checkpointing",
-    #     action="store_true",
-    #     help="Whether or not to use gradient checkpointing to save memory at the expense of slower backward pass.",
-    # )
-    parser.add_argument(
-        "--learning_rate",
-        type=float,
-        default=5e-6,
-        help="Initial learning rate (after the potential warmup period) to use.",
-    )
-    parser.add_argument("--not_cache_latents", action="store_true", help="Do not precompute and cache latents from VAE.")
-    parser.add_argument("--local_rank", type=int, default=-1, help="For distributed training: local_rank")
-
-    if input_args is not None:
-        args = parser.parse_args(input_args)
-    else:
-        args = parser.parse_args()
-
-    env_local_rank = int(os.environ.get("LOCAL_RANK", -1))
-    if env_local_rank != -1 and env_local_rank != args.local_rank:
-        args.local_rank = env_local_rank
-
-    return args
 
 
 def main(args):
@@ -149,7 +26,6 @@ def main(args):
         gradient_accumulation_steps=1,
         mixed_precision="fp16",
     )
-
 
     pipeline = None
     class_images_dir = Path(args.class_data_dir)
@@ -192,7 +68,6 @@ def main(args):
         del pipeline
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
-
 
     update_vars('model_name', args.pretrained_model_name_or_path)
     tokenizer = CLIPTokenizer.from_pretrained(
@@ -247,12 +122,11 @@ def main(args):
     noise_scheduler = DDPMScheduler.from_config(args.pretrained_model_name_or_path, subfolder="scheduler")
 
     update_vars('instance_prompt', args.instance_prompt)
-    train_dataset = DreamBoothDataset(
+    train_dataset = TrainPhotoDataset(
         instance_data_dir=args.instance_data_dir,
         instance_prompt=args.instance_prompt,
         class_prompt=args.class_prompt,
         tokenizer=tokenizer,
-        # with_prior_preservation=True,
         size=512,
         num_class_images=args.num_class_images
     )
@@ -452,8 +326,8 @@ def main(args):
             progress_bar.set_postfix(**logs)
             accelerator.log(logs, step=global_step)
 
-            loss_logs.append({'Loss on {}'.format(global_step): loss})
-            loss_logs.append({'Average loss on {}'.format(global_step): loss_avg.avg.item()})
+            loss_logs.append(['Loss on {}'.format(global_step), loss])
+            loss_logs.append(['Average loss on {}'.format(global_step), loss_avg.avg.item()])
 
             save_weights(global_step)
 
@@ -471,7 +345,5 @@ def main(args):
 
     update_vars('logs', '\n'.join(loss_logs))
 
-if __name__ == "__main__":
-    args = parse_args()
-    main(args)
+
 

@@ -9,7 +9,7 @@ from torchvision import transforms
 from scripts.preprocess.preprocess import *
 
 
-class DreamBoothDataset(Dataset):
+class TrainPhotoDataset(Dataset):
     """
     A dataset to prepare the instance and class images with the prompts for fine-tuning the model.
     It pre-processes the images and the tokenizes prompts.
@@ -21,13 +21,11 @@ class DreamBoothDataset(Dataset):
         instance_prompt,
         class_prompt,
         tokenizer,
-        # with_prior_preservation=True,
         size=512,
         num_class_images=None
     ):
         self.size = size
         self.tokenizer = tokenizer
-        # self.with_prior_preservation = with_prior_preservation
         self.instance_prompt = instance_prompt
         self.instance_data_dir = instance_data_dir
         self.class_prompt = class_prompt
@@ -42,7 +40,6 @@ class DreamBoothDataset(Dataset):
                          if x.is_file()]
         self.instance_images_path.extend(inst_img_path)
 
-        # if with_prior_preservation:
         class_img_path = [(x, self.class_prompt) for x in Path(dataset_dir).iterdir()
                           if x.is_file()]
         self.class_images_path.extend(class_img_path[:num_class_images])
@@ -67,7 +64,7 @@ class DreamBoothDataset(Dataset):
 
     def __getitem__(self, index):
         example = {}
-        instance_path, instance_prompt = self.instance_images_path[index] #% self.num_instance_images]
+        instance_path, instance_prompt = self.instance_images_path[index % self.num_instance_images]
         instance_image = Image.open(instance_path)
         if not instance_image.mode == "RGB":
             instance_image = instance_image.convert("RGB")
@@ -79,8 +76,7 @@ class DreamBoothDataset(Dataset):
             max_length=self.tokenizer.model_max_length,
         ).input_ids
 
-        # if self.with_prior_preservation:
-        class_path, class_prompt = self.class_images_path[index] # % self.num_class_images]
+        class_path, class_prompt = self.class_images_path[index % self.num_class_images]
         class_image = Image.open(class_path)
         if not class_image.mode == "RGB":
             class_image = class_image.convert("RGB")

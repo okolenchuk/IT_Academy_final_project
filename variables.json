@@ -1,7 +1,9 @@
-{"pic_size": "(512, 512)",
+{
+  "pic_size": "(512, 512)",
   "train_photo_path": "",
   "trained_model_dir": "",
   "output_path": "",
   "instance_name": "",
-  "huggingface_Token": "",
-  "model_name": ""}
+  "model_name": "",
+  "logs": ""
+}
