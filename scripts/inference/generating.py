@@ -7,10 +7,7 @@ from prompt_selection import *
 from pathlib import Path
 
 
-def generate_prompt_images(prompt: str, model_path, num_samples: int = 2,
-                           guidance_scale=7.5, num_inference_steps=100,
-                           save_path=r'/result'):
-
+def create_pipe(model_path):
     scheduler = DDIMScheduler(beta_start=0.00085,
                               beta_end=0.012,
                               beta_schedule="scaled_linear",
@@ -20,7 +17,19 @@ def generate_prompt_images(prompt: str, model_path, num_samples: int = 2,
                                                    scheduler=scheduler,
                                                    safety_checker=None,
                                                    torch_dtype=torch.float16).to("cuda")
+    return pipe
 
+
+with open(str(Path('IT_Academy_final_project').joinpath('variables.json')), 'r') as file:
+    d = file.read()
+d = json.loads(d)
+model_path = d['output_path']
+pipe = create_pipe(model_path)
+
+
+def generate_prompt_images(prompt: str, pipe=pipe, num_samples: int = 2,
+                           guidance_scale=7.5, num_inference_steps=100,
+                           save_path=r'/result'):
     height = 512
     width = 512
     g_cuda = torch.Generator(device='cuda')

@@ -238,7 +238,7 @@ def main(args):
                 torch_dtype=torch.float16,
                 revision="fp16",
             )
-            save_dir = os.path.join(args.output_dir, f"{step}")
+            save_dir = os.path.join(args.output_dir)
             pipeline.save_pretrained(save_dir)
 
             if args.save_sample_prompt is not None:
@@ -332,7 +332,7 @@ def main(args):
             accelerator.log(logs, step=global_step)
 
             loss_logs.append(['Loss on {}'.format(global_step), loss])
-            loss_logs.append(['Average loss on {}'.format(global_step), loss_avg.avg.item()])
+            # loss_logs.append(['Average loss on {}'.format(global_step), loss_avg.avg.item()])
 
             progress_bar.update(1)
             global_step += 1
