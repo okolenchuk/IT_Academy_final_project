@@ -331,8 +331,8 @@ def main(args):
             progress_bar.set_postfix(**logs)
             accelerator.log(logs, step=global_step)
 
-            loss_logs.append(['Loss on {}'.format(global_step), loss])
-            # loss_logs.append(['Average loss on {}'.format(global_step), loss_avg.avg.item()])
+            # loss_logs.append(['Loss on {}'.format(global_step), loss])
+            loss_logs.append(['Average loss on {}'.format(global_step), loss_avg.avg.item()])
 
             progress_bar.update(1)
             global_step += 1
@@ -342,11 +342,12 @@ def main(args):
 
         accelerator.wait_for_everyone()
 
+    update_vars('logs', loss_logs)
     save_weights(global_step)
 
     accelerator.end_training()
 
-    update_vars('logs', loss_logs)
+
 
 
 
