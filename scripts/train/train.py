@@ -346,7 +346,7 @@ def main(args):
 
     accelerator.end_training()
 
-    update_vars('logs', '\n'.join(loss_logs))
+    update_vars('logs', loss_logs)
 
 
 
