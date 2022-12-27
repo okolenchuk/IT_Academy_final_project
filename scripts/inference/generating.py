@@ -85,7 +85,7 @@ def generate_prompt_images(prompt: str, pipe=pipe, num_samples: int = 2,
 
 def generate_n_images(class_name, instance_name: str, save_path, num: int = 10, num_inference_steps=100):
     list_prompts = class_prompts(class_name)
-    for i in trange(num):
+    for _ in range(num):
         prompt = random.choice(list_prompts).replace('*', '{} {}'.format(class_name, instance_name))
         generate_prompt_images(prompt, num_samples=1,
                                num_inference_steps=num_inference_steps,
