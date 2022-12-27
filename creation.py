@@ -24,12 +24,6 @@ def parse_args(input_args=None):
         help="The number of samples to 1 prompt.",
     )
     parser.add_argument(
-        "--save_guidance_scale",
-        type=float,
-        default=7.5,
-        help="CFG for generating images.",
-    )
-    parser.add_argument(
         "--save_infer_steps",
         type=int,
         default=100,
