@@ -1,6 +1,7 @@
 import argparse
 from pathlib import Path
 from scripts.inference.generating import *
+from scripts.preprocess.preprocess import *
 
 
 def parse_args(input_args=None):
@@ -42,10 +43,7 @@ def parse_args(input_args=None):
         help="Word to create context for random generating",
     )
     parser.add_argument(
-        "--use_google_drive_to_save", action="store_true", help="Whether or not to save images to your google drive."
-    )
-    parser.add_argument(
-        "--use_saved_prompts", action="store_true", help="Whether or not to use presaved prompts."
+        "--use_saved_prompts", choices=('True','False'), help="Whether or not to use presaved prompts."
     )
 
     if input_args is not None:
@@ -58,19 +56,15 @@ def parse_args(input_args=None):
 
 def create(args):
 
-    if args.use_google_drive_to_save:
-        from google.colab import drive
-        drive.mount('/content/drive')
-        save_path = Path('/content/drive/MyDrive/').joinpath(args.save_path)
-    else:
-        save_path = args.save_path
+    save_path = args.save_path
 
-    if args.use_saved_prompts:
+    update_vars('output_path', save_path)
+    if args.use_saved_prompts=='True':
         generate_n_images(args.gender, args.instance_name,
                           save_path, num=args.n_images,
                           num_inference_steps=args.save_infer_steps)
     else:
-        generate_image_with_random_lexica_prompt(word='', num_samples=args.n_images,
+        generate_image_with_random_lexica_prompt(save_path, word='', num_samples=args.n_images,
                                                  num_inference_steps=args.save_infer_steps)
 
 

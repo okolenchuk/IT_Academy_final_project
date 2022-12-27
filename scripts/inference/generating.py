@@ -7,6 +7,8 @@ import requests
 import json
 import random
 from pathlib import Path
+from tqdm.auto import trange
+
 
 
 prompts_cat = {'women': r'female.txt',
@@ -49,7 +51,7 @@ def create_pipe(model_path):
 with open(str(Path('IT_Academy_final_project').joinpath('variables.json')), 'r') as file:
     d = file.read()
 d = json.loads(d)
-model_path = d['output_path']
+model_path = d['trained_model_dir']
 pipe = create_pipe(model_path)
 
 
@@ -58,8 +60,7 @@ def generate_prompt_images(prompt: str, pipe=pipe, num_samples: int = 2,
                            save_path=r'/result'):
     height = 512
     width = 512
-    g_cuda = torch.Generator(device='cuda')
-    with autocast(g_cuda), torch.inference_mode():
+    with autocast('cuda'), torch.inference_mode():
         images = pipe(
             prompt,
             height=height,
@@ -67,9 +68,8 @@ def generate_prompt_images(prompt: str, pipe=pipe, num_samples: int = 2,
             num_images_per_prompt=num_samples,
             num_inference_steps=num_inference_steps,
             guidance_scale=guidance_scale,
-            generator=g_cuda
+            generator=torch.Generator(device='cuda')
         ).images
-    print(prompt)
     name = re.sub(r'[^\w]', ' ', prompt)
     c = 0
 
@@ -85,11 +85,16 @@ def generate_prompt_images(prompt: str, pipe=pipe, num_samples: int = 2,
 
 def generate_n_images(class_name, instance_name: str, save_path, num: int = 10, num_inference_steps=100):
     list_prompts = class_prompts(class_name)
-    for i in range(num):
+    for i in trange(num):
         prompt = random.choice(list_prompts).replace('*', '{} {}'.format(class_name, instance_name))
-        generate_prompt_images(prompt, num_samples=1, num_inference_steps=num_inference_steps, save_path=save_path)
+        generate_prompt_images(prompt, num_samples=1,
+                               num_inference_steps=num_inference_steps,
+                               save_path=save_path)
 
 
 def generate_image_with_random_lexica_prompt(save_path, word='', num_samples: int = 2, num_inference_steps=100):
-    prompt = random_prompt(word=word)
-    generate_prompt_images(save_path, prompt, num_samples, num_inference_steps)
+    for _ in range(num_samples):
+        prompt = random_prompt(word=word)
+        generate_prompt_images(prompt, num_samples=num_samples,
+                           num_inference_steps=num_inference_steps,
+                           save_path=save_path)
