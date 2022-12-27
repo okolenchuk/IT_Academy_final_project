@@ -118,3 +118,5 @@ def parse_args(input_args=None):
 
     return args
 
+if __name__ == "__main__":
+    args = parse_args()

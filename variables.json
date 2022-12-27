@@ -1,9 +1,9 @@
 {
   "pic_size": "(512, 512)",
   "train_photo_path": "",
-  "trained_model_dir": "",
+  "trained_model_dir": "content/trained_model",
   "output_path": "",
-  "instance_name": "",
-  "model_name": "",
+  "instance_name": "photo_of_KirillShimanovich",
+  "model_name": "runwayml/stable-diffusion-v1-5",
   "logs": ""
 }
