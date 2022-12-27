@@ -243,7 +243,7 @@ def main(args):
 
             if args.save_sample_prompt is not None:
                 pipeline = pipeline.to(accelerator.device)
-                g_cuda = torch.GeneratorGenerator(device=accelerator.device)
+                g_cuda = torch.Generator(device=accelerator.device)
                 pipeline.set_progress_bar_config(disable=True)
                 sample_dir = os.path.join(save_dir, "samples")
                 os.makedirs(sample_dir, exist_ok=True)
