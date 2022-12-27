@@ -83,13 +83,13 @@ def generate_prompt_images(prompt: str, pipe=pipe, num_samples: int = 2,
         c += 1
 
 
-def generate_n_images(class_name, instance_name: str, save_path, num: int = 10):
+def generate_n_images(class_name, instance_name: str, save_path, num: int = 10, num_inference_steps=100):
     list_prompts = class_prompts(class_name)
     for i in range(num):
         prompt = random.choice(list_prompts).replace('*', '{} {}'.format(class_name, instance_name))
-        generate_prompt_images(prompt, save_path, num_samples=1)
+        generate_prompt_images(prompt, num_samples=1, num_inference_steps=num_inference_steps, save_path=save_path)
 
 
-def generate_image_with_random_lexica_prompt(word='', num_samples: int = 2):
+def generate_image_with_random_lexica_prompt(save_path, word='', num_samples: int = 2, num_inference_steps=100):
     prompt = random_prompt(word=word)
-    generate_prompt_images(prompt, num_samples)
+    generate_prompt_images(save_path, prompt, num_samples, num_inference_steps)
