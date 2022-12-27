@@ -11,7 +11,7 @@ from tqdm.auto import trange
 
 
 
-prompts_cat = {'women': r'female.txt',
+prompts_cat = {'woman': r'female.txt',
                'man': r'male.txt'}
 
 
