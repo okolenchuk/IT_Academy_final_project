@@ -23,7 +23,7 @@ def prepare_photos(foto_path, save_path):
 
     counter = 1
 
-    photos = Path(foto_path).glob('*.[jpg][jpeg][png]')
+    photos = Path(foto_path).glob('*.[jpg][jpeg][png][JPG][JPEG][PNG]')
 
     if not Path(save_path).exists():
         Path(save_path).mkdir()
