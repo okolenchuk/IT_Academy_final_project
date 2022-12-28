@@ -81,16 +81,17 @@ python run.py \
 
 While training some important variables will be saved in variables.json
 
-{ \
-  "pic_size": "(512, 512)", \
-  "train_photo_path": "", \
-  "trained_model_dir": "", \
-  "output_path": "", \
-  "instance_name": "", \
-  "model_name": "", \
-  "logs": "" \
+```Shell
+{ 
+  "pic_size": "(512, 512)", 
+  "train_photo_path": "", 
+  "trained_model_dir": "", 
+  "output_path": "", 
+  "instance_name": "", 
+  "model_name": "", 
+  "logs": "" 
 }
-
+```
 
 ### Inference
 
