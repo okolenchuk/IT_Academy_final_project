@@ -1,22 +1,19 @@
 import hashlib
 import itertools
-import json
 import math
 import os
 from contextlib import nullcontext
-from pathlib import Path
 
 import torch
 import torch.nn.functional as F
 import torch.utils.checkpoint
-from matplotlib import pyplot as plt
-from torch.utils.data import Dataset
-
 from accelerate import Accelerator
 from diffusers import AutoencoderKL, DDIMScheduler, DDPMScheduler, StableDiffusionPipeline, UNet2DConditionModel
 from diffusers.optimization import get_scheduler
-from tqdm.auto import tqdm
+from matplotlib import pyplot as plt
+from torch.utils.data import Dataset
 from transformers import CLIPTextModel, CLIPTokenizer
+
 from scripts.train.datasets import *
 
 
@@ -77,7 +74,6 @@ def main(args):
         revision="fp16",
     )
 
-    # Load models and create wrapper for stable diffusion
     text_encoder = CLIPTextModel.from_pretrained(
         args.pretrained_model_name_or_path,
         subfolder="text_encoder",
@@ -184,7 +180,6 @@ def main(args):
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
 
-    # Scheduler and math around the number of training steps.
     overrode_max_train_steps = False
     num_update_steps_per_epoch = math.ceil(len(train_dataloader))
     if args.max_train_steps is None:
@@ -215,7 +210,6 @@ def main(args):
         accelerator.init_trackers("dreambooth")
 
     # Train!
-
     loss_logs = []
 
     def save_weights(step):
@@ -247,7 +241,6 @@ def main(args):
                 pipeline.set_progress_bar_config(disable=True)
                 sample_dir = os.path.join(save_dir, "samples")
                 os.makedirs(sample_dir, exist_ok=True)
-                saved_images = []
                 with torch.autocast("cuda"), torch.inference_mode():
                     for i in tqdm(range(args.n_save_sample), desc="Generating samples"):
                         images = pipeline(
@@ -331,7 +324,6 @@ def main(args):
             progress_bar.set_postfix(**logs)
             accelerator.log(logs, step=global_step)
 
-            # loss_logs.append(['Loss on {}'.format(global_step), loss])
             loss_logs.append(['Average loss on {}'.format(global_step), loss_avg.avg.item()])
 
             progress_bar.update(1)
