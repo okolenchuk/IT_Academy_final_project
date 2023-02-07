@@ -26,9 +26,9 @@ class TrainPhotoDataset(Dataset):
     ):
         self.size = size
         self.tokenizer = tokenizer
-        self.instance_prompt = instance_prompt
+        self.instance_prompt = instance_prompt.replace('_', ' ')
         self.instance_data_dir = instance_data_dir
-        self.class_prompt = class_prompt
+        self.class_prompt = class_prompt.replace('_', ' ')
         self.instance_images_path = []
         self.class_images_path = []
 

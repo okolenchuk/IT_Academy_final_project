@@ -80,7 +80,7 @@ def main(args):
         revision="fp16",
     )
     vae = AutoencoderKL.from_pretrained(
-        args.pretrained_model_name_or_path,
+        "stabilityai/sd-vae-ft-mse",
         subfolder="vae",
         revision="fp16",
     )
@@ -223,7 +223,7 @@ def main(args):
                 unet=accelerator.unwrap_model(unet),
                 text_encoder=text_enc_model,
                 vae=AutoencoderKL.from_pretrained(
-                    "stabilityai/sd-vae-ft-mse" or args.pretrained_model_name_or_path,
+                    "stabilityai/sd-vae-ft-mse",
                     subfolder=None,
                     revision=None,
                 ),
