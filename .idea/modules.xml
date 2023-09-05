@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../../../AdaptiveANC/.idea/AdaptiveANC.iml" filepath="$PROJECT_DIR$/../../../AdaptiveANC/.idea/AdaptiveANC.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/IT_Academy_final_progect.iml" filepath="$PROJECT_DIR$/.idea/IT_Academy_final_progect.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../../Simple_project/.idea/Simple_project.iml" filepath="$PROJECT_DIR$/../../../Simple_project/.idea/Simple_project.iml" />
     </modules>
   </component>
 </project>

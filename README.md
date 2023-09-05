@@ -2,7 +2,7 @@
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1EFwdQckJrQ7se45cyn6Caf8bUWZDA59t#scrollTo=xhxFTElOXBU7)
 
-You can try this model with your photos in google colaboratory with the link above.
+You can try this model with your photos in google colaboratory with the link above. Try it!!!
 
 ### About project
 - [Installation](#Installation)
